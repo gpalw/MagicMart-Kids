@@ -4,23 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>小小掌柜 - 魔法杂货铺</title>
-
+    <title>小小掌柜 - 儿童早教全家桶</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
-
     <style>
-        /* === 核心 CSS：解决平板操作问题 === */
-
-        /* 1. 全局禁止选中文字、禁止长按弹出菜单 (Android/iOS 必须) */
+        /* CSS 保持你之前的不变 (防误触、全黑背景等) */
         * {
             -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
         }
 
-        /* 2. 背景全黑，禁止页面滚动 */
         body {
             margin: 0;
             padding: 0;
@@ -28,11 +21,9 @@
             overflow: hidden;
             width: 100vw;
             height: 100vh;
-            /* 新增：禁止浏览器的“橡皮筋”效果和下拉刷新 */
             overscroll-behavior: none;
         }
 
-        /* 3. 游戏容器居中，且强制接管所有触摸事件 */
         #game-container {
             width: 100%;
             height: 100%;
@@ -40,10 +31,8 @@
             justify-content: center;
             align-items: center;
             touch-action: none;
-            /* 关键：禁止浏览器处理滑动手势 */
         }
 
-        /* 4. Canvas 设置，去掉点击高亮 */
         canvas {
             display: block;
             outline: none;
@@ -55,12 +44,15 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 
     <script src="assets_config.js"></script>
+
+    <script src="js/scenes/MenuScene.js"></script>
+    <script src="js/scenes/ShopGame.js"></script>
+
+    <script src="js/main.js"></script>
 </head>
 
 <body>
     <div id="game-container"></div>
-
-    <script src="game.js"></script>
 </body>
 
 </html>
