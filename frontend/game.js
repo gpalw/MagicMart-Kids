@@ -214,6 +214,22 @@ function spawnItems(scene, itemList, dropZone, targetFoodData, npcData) {
         item.setAngle(Phaser.Math.Between(-20, 20)); // 随机旋转
         item.setData('key', key);
         item.setInteractive({ draggable: true }); // 开启拖拽
+        item.on('pointerdown', () => {
+            // 只有在没被拖进圈里的时候才读
+            if (item.active) {
+                // 查找对应的中文名
+                let foodInfo = GameAssets.foods.find(f => f.key === key);
+                if (foodInfo) {
+                    // 播放简短的词汇，比如 "苹果"
+                    // 注意：这里可能会打断背景任务语音，看你取舍，或者用另一个 sound channel
+                    // 简单做法：直接读
+                    let u = new SpeechSynthesisUtterance(foodInfo.zh);
+                    u.lang = 'zh-CN';
+                    u.rate = 1.0;
+                    window.speechSynthesis.speak(u);
+                }
+            }
+        });
         scene.input.setDraggable(item);
 
         // 呼吸动画
@@ -255,18 +271,32 @@ function spawnItems(scene, itemList, dropZone, targetFoodData, npcData) {
     scene.input.off('drop');
 
     scene.input.on('drop', (pointer, gameObject, target) => {
-        // 校验逻辑
         if (gameObject.getData('key') === currentTargetKey) {
-            gameObject.destroy(); // 吃掉了
+            gameObject.destroy();
             currentFound++;
-            speak("对啦！"); // 简单的即时反馈
+
+            // === 新增功能 2：大声数数 ===
+            // 不再只说“对啦”，而是说数字
+            let countText = currentFound.toString(); // "1", "2"
+            speak(countText);
+
+            // 也可以同时在屏幕中间弹出一个巨大的数字特效
+            showBigNumberEffect(scene, countText);
 
             if (currentFound >= currentTargetCount) {
-                gameWin(scene);
+                // 延迟一点点再庆祝，让孩子听完数字
+                scene.time.delayedCall(800, () => gameWin(scene));
             }
         } else {
-            // 拖错了
-            speak("不对哦，这个不是" + targetFoodData.zh);
+            // === 新增功能 3：错误反馈 ===
+            let wrongKey = gameObject.getData('key');
+            let wrongItem = GameAssets.foods.find(f => f.key === wrongKey);
+
+            // 语音：这是香蕉，不是苹果
+            if (wrongItem) {
+                speak(`这是${wrongItem.zh}，不是${targetFoodData.zh}哦`);
+            }
+
             gameObject.x = gameObject.input.dragStartX;
             gameObject.y = gameObject.input.dragStartY;
         }
@@ -326,4 +356,23 @@ function speak(text) {
         u.rate = 0.9;
         window.speechSynthesis.speak(u);
     }
+}
+
+function showBigNumberEffect(scene, text) {
+    let num = scene.add.text(scene.sys.game.config.width / 2, scene.sys.game.config.height / 2, text, {
+        fontFamily: '"ZCOOL KuaiLe", Arial',
+        fontSize: '200px',
+        color: '#FFF',
+        stroke: '#000',
+        strokeThickness: 10
+    }).setOrigin(0.5).setScale(0);
+
+    scene.tweens.add({
+        targets: num,
+        scaleX: 1.5, scaleY: 1.5,
+        alpha: { start: 1, end: 0 },
+        duration: 800,
+        ease: 'Back.out',
+        onComplete: () => num.destroy()
+    });
 }
