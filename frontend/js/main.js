@@ -15,7 +15,7 @@ const config = {
     },
     // 关键：这里列出所有的场景
     // 第一个是默认启动的场景 (大厅)
-    scene: [MenuScene, ShopGame]
+    scene: [MenuScene, ShopGame, ShadowGame]
 };
 
 // 启动游戏
